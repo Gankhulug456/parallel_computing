@@ -67,18 +67,9 @@ Generates a histogram of randomly generated floats in \[0, 20) using distributed
 
 ---
 
-## 📁 File Structure
-├── openmp_prime_finder.c
-├── mpi_histogram_builder.c
-├── Makefile
-├── README.md
-
-
----
-
 ## 🌐 See More
 
-If you’re interested in seeing more of my work, visit my [website](ganaa.work).
+If you’re interested in seeing more of my work, visit my [website](https://ganaa.work/).
 
 ---
 
