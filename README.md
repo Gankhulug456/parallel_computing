@@ -1,103 +1,71 @@
-Parallel Computing Projects
-OpenMP & MPI Labs
+# Parallel Computing Projects
 
-Overview
-A set of parallel computing projects built using C, OpenMP, and MPI. These projects explore thread-level and process-level parallelism through hands-on implementations of classic algorithms and parallel programming patterns.
+A collection of parallel computing labs built with **C**, **OpenMP**, and **MPI**, exploring thread- and process-level parallelism. Projects include a multi-threaded prime number generator and an MPI-based histogram builder.
 
-🔧 Setup
-Language: C (GCC 9.3)
-Platform: Ubuntu 20.04, 8-core Intel CPU / Linux MPI Cluster
-Tools: OpenMP 4.5, OpenMPI 4.0
+---
 
-🧵 OpenMP Prime Finder
-A multi-threaded implementation of the Sieve of Eratosthenes to compute all prime numbers in a given range 
-[
-𝑀
-,
-𝑁
-]
-[M,N] using OpenMP. The program demonstrates near-linear speedup on an 8-core CPU.
+## 🧠 Overview
 
-Key Features
-Compiled with gcc -fopenmp
+- **Language**: C (GCC 9.3)  
+- **Platform**: Ubuntu 20.04, 8-core Intel CPU / Linux MPI Cluster  
+- **Tools**: OpenMP 4.5, OpenMPI 4.0  
 
-Each thread uses a private buffer (prime_loc) to avoid false sharing
+---
 
-Primes from threads are merged using a #pragma omp critical section
+## 🧵 OpenMP Prime Finder
 
-Optimized inner loop by limiting divisors to ≤ √x
+A multi-threaded Sieve of Eratosthenes that finds all prime numbers in a given range \[M, N\] using OpenMP.
 
-Parallel Strategy
-c
-Copy
-Edit
-#pragma omp parallel
-{
-    // Each thread has private buffer
-    #pragma omp for
-    for (int i = M; i <= N; ++i) {
-        // Sieve logic using private prime_loc
-    }
-    #pragma omp critical
-    {
-        // Merge results into global prime list
-    }
-}
-Challenges & Optimizations
-Avoided false sharing with per-thread local buffers
+### 🛠 Implementation Details
 
-Minimized contention with a small #pragma omp critical region
+- **Compilation**: `gcc -fopenmp prime_finder.c -o prime_finder`
+- **Thread Strategy**:  
+  Each thread maintains a private list of found primes (`prime_loc`).  
+  Threads iterate over candidates using `#pragma omp for`, then merge results into a global array inside a `#pragma omp critical` section.
 
-Limited divisor checks to √x to improve time complexity
+### ⚙️ Optimization Notes
 
-📊 MPI Histogram Builder
-Generates a histogram from randomly generated floating-point numbers in 
-[
-0
-,
-20
-)
-[0,20) using MPI for parallel data distribution and reduction.
+- Avoids false sharing by isolating per-thread writes to local buffers
+- Uses `#pragma omp parallel` and `#pragma omp for` for workload distribution
+- Optimized the sieve loop: each x is tested only against divisors ≤ √x
 
-Key Features
-Built for a 4-node Linux cluster using OpenMPI
+---
 
-Rank 0 generates N random floats and distributes them across ranks
+## 📊 MPI Histogram Builder
 
-Each rank computes a local histogram, then reduces to a global one using MPI_Reduce
+Generates a histogram of randomly generated floats in \[0, 20) using distributed computing with MPI.
 
-Parallel Strategy
-Non-root ranks receive data via MPI_Send; root rank copies locally
+### 🛠 Implementation Details
 
-Each rank computes a local bin count
+- **Compilation**: `mpicc histogram_builder.c -o histogram_builder`
+- **Execution**: `mpirun -np 4 ./histogram_builder`
+- **Parallel Strategy**:
+  - Rank 0 generates N random floats in \[0, 20)
+  - Data is split across ranks using `MPI_Send` (or kept locally by rank 0)
+  - Each rank builds a local histogram
+  - Global result is computed with:
 
-Final result is obtained via:
+    ```c
+    MPI_Reduce(local_bins, bins, num_bins, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    ```
 
-c
-Copy
-Edit
-MPI_Reduce(local_bins, bins, num_bins, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-Challenges & Optimizations
-Handled uneven data splits: first N % P ranks receive one extra value
+### ⚙️ Optimization Notes
 
-Used MPI_Barrier and MPI_Wtime to measure only the parallel section
+- Handles uneven splits by giving the first (N mod P) ranks one extra element
+- Uses `MPI_Barrier` and `MPI_Wtime` to time only the parallel section
+- Verified against a serial version for correctness
 
-Verified correctness by comparing with a serial version
+---
 
-💡 Notes on Performance
-OpenMP Prime Finder:
-For small input sizes, adding threads may hurt performance due to overhead from spawning threads and contention in #pragma omp critical. This matches the expected non-linear speedup discussed in class.
+## 📈 Performance Discussion
 
-MPI Histogram Builder:
-For large input sizes, more ranks improve performance by dividing the workload. This demonstrates good scalability, consistent with lecture material on parallel efficiency.
+- **OpenMP Prime Finder**:  
+  For small problem sizes, adding more threads may reduce performance due to thread creation and synchronization overhead. This matches expected behavior discussed in lecture materials.
 
-📁 Project Structure
-Copy
-Edit
-.
-├── openmp_prime_finder.c
-├── mpi_histogram_builder.c
-├── Makefile
-├── README.md
-🌐 Portfolio
-Interested in more projects like this? Check out my website for additional work in systems programming, web dev, and interactive media.
+- **MPI Histogram Builder**:  
+  For large inputs, distributing the workload improves performance and showcases effective scalability and parallel speed-up.
+
+---
+
+## 📁 File Structure
+
