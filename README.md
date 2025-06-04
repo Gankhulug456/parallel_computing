@@ -4,7 +4,7 @@ A collection of parallel computing labs built with **C**, **OpenMP**, and **MPI*
 
 ---
 
-## 🧠 Overview
+## Overview
 
 - **Language**: C (GCC 9.3)  
 - **Platform**: Ubuntu 20.04, 8-core Intel CPU / Linux MPI Cluster  
@@ -12,18 +12,18 @@ A collection of parallel computing labs built with **C**, **OpenMP**, and **MPI*
 
 ---
 
-## 🧵 OpenMP Prime Finder
+## OpenMP Prime Finder
 
 A multi-threaded Sieve of Eratosthenes that finds all prime numbers in a given range \[M, N\] using OpenMP.
 
-### 🛠 Implementation Details
+### Implementation Details
 
 - **Compilation**: `gcc -fopenmp prime_finder.c -o prime_finder`
 - **Thread Strategy**:  
   Each thread maintains a private list of found primes (`prime_loc`).  
   Threads iterate over candidates using `#pragma omp for`, then merge results into a global array inside a `#pragma omp critical` section.
 
-### ⚙️ Optimization Notes
+### Optimization Notes
 
 - Avoids false sharing by isolating per-thread writes to local buffers
 - Uses `#pragma omp parallel` and `#pragma omp for` for workload distribution
@@ -35,7 +35,7 @@ A multi-threaded Sieve of Eratosthenes that finds all prime numbers in a given r
 
 Generates a histogram of randomly generated floats in \[0, 20) using distributed computing with MPI.
 
-### 🛠 Implementation Details
+### Implementation Details
 
 - **Compilation**: `mpicc histogram_builder.c -o histogram_builder`
 - **Execution**: `mpirun -np 4 ./histogram_builder`
@@ -49,7 +49,7 @@ Generates a histogram of randomly generated floats in \[0, 20) using distributed
     MPI_Reduce(local_bins, bins, num_bins, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     ```
 
-### ⚙️ Optimization Notes
+### Optimization Notes
 
 - Handles uneven splits by giving the first (N mod P) ranks one extra element
 - Uses `MPI_Barrier` and `MPI_Wtime` to time only the parallel section
@@ -68,4 +68,19 @@ Generates a histogram of randomly generated floats in \[0, 20) using distributed
 ---
 
 ## 📁 File Structure
+├── openmp_prime_finder.c
+├── mpi_histogram_builder.c
+├── Makefile
+├── README.md
+
+
+---
+
+## 🌐 See More
+
+If you’re interested in seeing more of my work, visit my [website](ganaa.work).
+
+---
+
+
 
